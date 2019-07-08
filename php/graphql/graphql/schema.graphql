@@ -1,0 +1,232 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    cinemas(city: Int!, location: GeoLocation): [Cinema!]!
+    cities: [City!]!
+    events(kind: EventKind, target: ScheduleTarget, targetId: Int, date: DateTime): [EventsAggregation!]!
+    cinemasSchedule(eventId: Int!, cityId: Int!, date: DateTime!): CinemasSchedule!
+    eventsSchedule(cinemaId: Int!, date: DateTime!): EventsSchedule!
+    event(id: ID!): Event
+}
+
+input GeoLocation {
+    latitude: Float!
+    longitude: Float!
+}
+
+input ImageSize {
+    width: Int
+    height: Int
+}
+
+# Test in English
+type Cinema {
+    # Test of 2 line
+    # comment
+    id: ID!
+    name: String!
+    nameShort: String
+    ident: String!
+    saleEnabled: Boolean!
+    barEnabled: Boolean!
+    city: City!
+    contacts: CinemaContacts!
+    formats: [Format!]
+}
+
+# A city test
+type City {
+    id: ID!
+    name: String!
+    nameGenitive: String
+    timezone: String!
+    region: String!
+    localDatetime(format: String): DateTime!
+    cinemas: [Cinema!]
+}
+
+type CinemaContacts {
+    address: String!
+    contacts: Html!
+    metros: [Metro!]
+    latitude: Float!
+    longitude: Float!
+}
+
+type Metro {
+    name: String!
+    icon(size: ImageSize, maxDensity: Int): Icon!
+}
+
+type Format {
+    id: ID!
+    name: String!
+    textShort: String
+    textFull: String
+}
+
+type Hall {
+    id: ID!
+    name: String!
+    colorDark: String!
+    colorLight: String!
+}
+
+type EventsAggregation {
+    sessionsCount: Int!
+    format: Int!
+    event: Event
+}
+
+type CinemasSchedule {
+    totalSessionsCount: Int!
+    passedSessionsCount: Int!
+    formats: [Format!]!
+    schedule: [CinemaSchedule!]!
+}
+
+type EventsSchedule {
+    totalSessionsCount: Int!
+    passedSessionsCount: Int!
+    formats: [Format!]!
+    schedule: [EventSchedule!]!
+}
+
+type CinemaSchedule {
+    cinema: Cinema!
+    totalSessionsCount: Int!
+    passedSessionsCount: Int!
+    sessions: [Session!]!
+}
+
+type EventSchedule {
+    event: Event!
+    totalSessionsCount: Int!
+    passedSessionsCount: Int!
+    sessions: [Session!]!
+}
+
+type Event {
+    id: ID!
+    kind: String!
+    nameRussian: String!
+    nameOriginal: String
+    directors: String
+    actors: String
+    countries: String
+    duration: Duration
+    agecategory: Int!
+    trailer: Video
+    plot: String!
+    sticker: String
+    genres: [String!]!
+    verticalPoster(size: ImageSize): Image
+    horizontalPoster(size: ImageSize): Image
+    blurredPoster: Image
+    rating: Rating!
+    comments(after: String, first: Int, before: String, last: Int): FilmCommentConnection!
+}
+
+type FilmCommentConnection {
+    edges: [FilmCommentEdge]
+    totalCount: Int!
+    pageInfo: PageInfo!
+}
+
+type FilmCommentEdge {
+    cursor: String!
+    node: FilmComment!
+}
+
+type FilmComment {
+    id: ID!
+    author: Actor!
+    body: String!
+    createdAt: DateTime!
+}
+
+type PageInfo {
+    endCursor: String
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+}
+
+type Actor {
+    id: ID!
+    name: String
+}
+
+type Session {
+    id: ID!
+    cinema: Cinema!
+    date: DateTime!
+    time: DateTime!
+    timestamp: Int!
+    film: Event!
+    hall: Hall!
+    levelId: Int!
+    isNight: Boolean!
+    isSubtitled: Boolean!
+    calendarDate: DateTime
+    priceSummary: String!
+    formatId: Int!
+}
+
+type Image {
+    filename: String!
+    url: String!
+    url2x: String
+    category: String!
+    mimeType: String
+}
+
+type Duration {
+    totalMinutes: Int!
+    hours: Int!
+    minutes: Int!
+}
+
+type Video {
+    type: VideoType!
+    id: String!
+    url: String!
+}
+
+type Rating {
+    rating: Float!
+    votes: Int!
+    star1Count: Int!
+    star2Count: Int!
+    star3Count: Int!
+    star4Count: Int!
+    star5Count: Int!
+}
+
+type Mutation {
+    id: ID
+}
+
+scalar DateTime
+scalar Html
+scalar Icon
+scalar Color
+
+enum EventKind {
+    film
+    theatre
+    art
+}
+
+enum ScheduleTarget {
+    event
+    cinema
+    city
+}
+
+enum VideoType {
+    youtube
+}
